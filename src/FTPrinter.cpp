@@ -70,10 +70,18 @@ void FTPrinter::printHorizontalLine() {
 
   *_outStream << "+"; // the left bar
 
-  for (unsigned int i = 0; i < tableWidth() - 2; ++i)
-    *_outStream << "-";
+  //*_outStream << "+"; // the right bar
+  for (size_t col = 0; col < numberOfColumns(); ++col) {
+    //line for the column space
+    for (size_t i = 0; i < columnWidth(col); ++i)
+      *_outStream << "-";
 
-  *_outStream << "+"; // the right bar
+    //for the seperator
+    const size_t seperatorWidth = separator().size();
+    for (size_t i = 0; i < seperatorWidth; ++i)
+      *_outStream << "+";
+  }
+  
   printEndl();
 }
 
