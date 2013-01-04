@@ -42,6 +42,7 @@ public:
   std::string columnName(const unsigned int i) const;
   unsigned int columnWidth(const unsigned int i) const;
   PrintFormat columnHeaderFormat(const unsigned int i) const;
+  unsigned int numberOfRows() const;
 
   void addColumn(const std::string& name, const unsigned int width = 25, const PrintFormat& format = format::none);
 
@@ -61,16 +62,26 @@ public:
     *_outStream << _format.formatString();
 
     // Leave 3 extra space: One for negative sign, one for zero, one for decimal
-    *_outStream << std::setw(columnWidth(_col))
-                 << input;
+    std::stringstream strBuffer;
+    strBuffer //<< std::setw(columnWidth(_col) - _displacement)
+              << input;
 
-    *_outStream << _format.unformatString();
+    std::string str = strBuffer.str();
+    size_t width = std::max<int>(str.size(), (int)columnWidth(_col) - _displacement);
+    //std::cout << "(" << _displacement << ", " << (int)width - columnWidth(_col);
+    _displacement += (int)width - columnWidth(_col);
+    //std::cout << "=>" << _displacement << ")" << std::endl;
+
+    *_outStream << std::setw(width)
+    		<< str
+                << _format.unformatString();
     
     if (_col == numberOfColumns() - 1) {
       *_outStream << separator();
       printEndl();
       _row++;
       _col = 0;
+      _displacement = 0;
     }
     else {
       *_outStream << separator();
@@ -83,8 +94,10 @@ public:
 private:
   void printHorizontalLine();
   void printEndl();
+  void printColumnStart();
+  void printColumnEnd();
 
-  template<typename T> void printDecimalNumber(T input);
+  template<typename T> static std::string decimalNumberToStr(const T input, const size_t width);
 
   std::ostream* _outStream;
   std::vector<std::string> _columnNames;
@@ -97,6 +110,7 @@ private:
 
   unsigned int _row;
   unsigned int _col;
+  unsigned int _displacement;
 };
 
 }// namespace ftprinter

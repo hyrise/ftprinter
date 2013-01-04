@@ -8,6 +8,7 @@
 using ftprinter::FTPrinter;
 
 int main(int argc, char** argv){
+  //test of standard unformated output
   FTPrinter tp;
   tp.addColumn("Name", 25);
   tp.addColumn("Age", 5);
@@ -29,7 +30,7 @@ int main(int argc, char** argv){
   tp << "Tom Doe" << 7 << "Student" << -M_PI;
   tp.printFooter();
 
-
+  //test for formated output
   FTPrinter tp2;
   tp2.addColumn("red",     8, ftprinter::format::red);
   tp2.addColumn("green",   8, ftprinter::format::green);
@@ -53,8 +54,22 @@ int main(int argc, char** argv){
       << ftprinter::format::blue << 6
       << ftprinter::format::red << 7
       << ftprinter::format::blue << 8
-      << ftprinter::format::green << 9;
+      << ftprinter::format::green << 9
+      << "neue zeile";
   tp2.printHeader();
+
+  //test for displacement compensation
+  FTPrinter tp3;
+  tp3.addColumn("too short column",  8);
+  tp3.addColumn("long enough column", 20);
+  tp3.addColumn("long enough column", 50);
+
+  tp3.printHeader();
+
+  tp3 << "asdhfjahsddfjhasdlkfjhasdklfjasdkfjhasdklfj" << "asdfasdfasdfasdfasdfasdfasdfasdfasdfasdf" << "bbbbb";
+  tp3 << 66666666666.5 << "asdf" << "asdfasdf";
+  tp3 << 123456789 << "a";
+  tp3.printFooter();
 
 
   return 0;

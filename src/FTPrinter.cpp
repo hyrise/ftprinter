@@ -15,7 +15,8 @@ FTPrinter::FTPrinter(std::ostream* output, const std::string& separator, const s
   _lineEnding(lineEnding),
   _format(format::none),
   _row(0),
-  _col(0) {}
+  _col(0),
+  _displacement(0) {}
 
 FTPrinter::~FTPrinter() {}
 
@@ -41,6 +42,10 @@ unsigned int FTPrinter::columnWidth(const unsigned int i) const {
 PrintFormat FTPrinter::columnHeaderFormat(const unsigned int i) const {
   return _headerFormats[i];
 }
+unsigned int FTPrinter::numberOfRows() const {
+  return _row;
+}
+
 
 /** \brief Add a column to our table
  ** 
@@ -60,6 +65,9 @@ void FTPrinter::addColumn(const std::string& name, unsigned int width, const Pri
 }
 
 void FTPrinter::printHorizontalLine() {
+  if (_col > 0)
+    *this << endl();
+
   *_outStream << "+"; // the left bar
 
   for (unsigned int i = 0; i < tableWidth() - 2; ++i)
@@ -78,7 +86,7 @@ void FTPrinter::printEndl() {
   _format = format::none;
 }
 
-void FTPrinter::printHeader(){
+void FTPrinter::printHeader() {
   printHorizontalLine();
   *_outStream << separator();
 
@@ -96,8 +104,28 @@ void FTPrinter::printHeader(){
   printHorizontalLine();
 }
 
-void FTPrinter::printFooter(){
+void FTPrinter::printFooter() {
   printHorizontalLine();
+}
+
+void FTPrinter::printColumnStart() {
+  if (_col == 0)
+    *_outStream << separator();
+  *_outStream << _format.formatString();
+}
+
+void FTPrinter::printColumnEnd() {
+  *_outStream << _format.unformatString();
+
+  *_outStream << separator();
+
+  ++_col;
+  if (_col >= numberOfColumns() - 1) {
+    printEndl();
+    ++_row;
+    _col = 0;
+    _displacement = 0;
+  }
 }
 
 
@@ -112,42 +140,48 @@ FTPrinter& FTPrinter::operator<<(endl input) {
   return *this;
 }
 FTPrinter& FTPrinter::operator<<(float input) {
-  printDecimalNumber<float>(input);
-  return *this;
+  return *this << (double) input;
 }
 FTPrinter& FTPrinter::operator<<(double input) {
-  printDecimalNumber<double>(input);
+  printColumnStart();
+
+  *_outStream << decimalNumberToStr<double>(input, columnWidth(_col));
+
+  printColumnEnd();
   return *this;
 }
 
 template<typename T>
-void FTPrinter::printDecimalNumber(T input) {
-  *_outStream << _format.formatString();
+std::string FTPrinter::decimalNumberToStr(const T input, const size_t width) {
+//  *_outStream << _format.formatString();
+
+
+  std::string str;
 
   // If we cannot handle this number, indicate so
-  if (input < 10 * (columnWidth(_col) - 1) || input > 10 * columnWidth(_col)) {
-    std::stringstream string_out;
-    string_out << std::setiosflags(std::ios::fixed)
-               << std::setprecision(columnWidth(_col))
-               << std::setw(columnWidth(_col))
-               << input;
+  if (input < 10 * (width - 1) || input > 10 * width) {
+    std::stringstream strBuffer;
+    strBuffer << std::setiosflags(std::ios::fixed)
+              << std::setprecision(width)
+              << std::setw(width)
+              << input;
 
-    std::string string_rep_of_number = string_out.str();
+    str = strBuffer.str();
 
-    string_rep_of_number[columnWidth(_col) - 1] = '*';
-    std::string string_to_print = string_rep_of_number.substr(0, columnWidth(_col));
-    *_outStream << string_to_print;
+    str[width - 1] = '*';
+    return str.substr(0, width);
+   // *_outStream << string_to_print;
   }
   else {
     // determine what precision we need
-    int precision = columnWidth(_col) - 1; // leave room for the decimal point
+    int precision = width - 1; // leave room for the decimal point
     if (input < 0)
       --precision; // leave room for the minus sign
 
     // leave room for digits before the decimal?
     if (input <= -1 || input >= 1){
-      int num_digits_before_decimal = 1 + (int)log10(std::abs(input));
-      precision -= num_digits_before_decimal;
+      int digitsBeforePoint = 1 + (int)log10(std::abs(input));
+      precision -= digitsBeforePoint;
     }
     else
       --precision; // e.g. 0.12345 or -0.1234
@@ -155,22 +189,28 @@ void FTPrinter::printDecimalNumber(T input) {
     if (precision < 0)
       precision = 0; // don't go negative with precision
 
-    *_outStream << std::setiosflags(std::ios::fixed)
-                << std::setprecision(precision)
-                << std::setw(columnWidth(_col))
-                << input;
+    std::stringstream strBuffer;
+    strBuffer << std::setiosflags(std::ios::fixed)
+              << std::setprecision(width)
+              << std::setw(width)
+              << input;
+
+    str = strBuffer.str();
   }
 
-  *_outStream << _format.unformatString();
+  //*_outStream << _format.unformatString();
 
-  *_outStream << separator();
-  if (_col >= numberOfColumns() - 1) {
-    printEndl();
-    ++_row;
-    _col = 0;
-  }
-  else
-    ++_col;
+  //*_outStream << separator();
+  //if (_col >= numberOfColumns() - 1) {
+  //  printEndl();
+  //  ++_row;
+  //  _col = 0;
+  //  _displacement = 0;
+  //}
+  //else
+  //  ++_col;
+
+  return str;
 }
 
 } //namespace tfprinter
