@@ -36,15 +36,15 @@ public:
   ~FTPrinter();
 
   //getter
-  unsigned int numberOfColumns() const;
-  unsigned int tableWidth() const;
+  size_t numberOfColumns() const;
+  size_t tableWidth() const;
   std::string separator() const;
-  std::string columnName(const unsigned int i) const;
-  unsigned int columnWidth(const unsigned int i) const;
-  PrintFormat columnHeaderFormat(const unsigned int i) const;
-  unsigned int numberOfRows() const;
+  std::string columnName(const size_t col) const;
+  size_t columnWidth(const size_t col) const;
+  PrintFormat columnHeaderFormat(const size_t col) const;
+  size_t numberOfRows() const;
 
-  void addColumn(const std::string& name, const unsigned int width = 25, const PrintFormat& format = format::none);
+  void addColumn(const std::string& name, const size_t width = 25, const PrintFormat& format = format::none);
 
   void printHeader();
   void printFooter();
@@ -101,16 +101,16 @@ private:
 
   std::ostream* _outStream;
   std::vector<std::string> _columnNames;
-  std::vector<unsigned int> _columnWidths;
+  std::vector<size_t> _columnWidths;
   std::string _separator;
   std::string _lineEnding;
 
   PrintFormat _format;
   std::vector<PrintFormat> _headerFormats;
 
-  unsigned int _row;
-  unsigned int _col;
-  unsigned int _displacement;
+  size_t _row;
+  size_t _col;
+  size_t _displacement;
 };
 
 }// namespace ftprinter

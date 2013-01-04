@@ -21,28 +21,28 @@ FTPrinter::FTPrinter(std::ostream* output, const std::string& separator, const s
 FTPrinter::~FTPrinter() {}
 
 //getter
-unsigned int FTPrinter::numberOfColumns() const {
+size_t FTPrinter::numberOfColumns() const {
   return _columnNames.size();
 }
-unsigned int FTPrinter::tableWidth() const {
-  unsigned int tableWidth = separator().size();
-  for (unsigned int i = 0; i < numberOfColumns(); ++i)
+size_t FTPrinter::tableWidth() const {
+  size_t tableWidth = separator().size();
+  for (size_t i = 0; i < numberOfColumns(); ++i)
     tableWidth += columnWidth(i) + separator().size();
   return tableWidth;
 }
 std::string FTPrinter::separator() const {
   return _separator;
 }
-std::string FTPrinter::columnName(const unsigned int i) const {
-  return _columnNames[i];
+std::string FTPrinter::columnName(const size_t col) const {
+  return _columnNames[col];
 }
-unsigned int FTPrinter::columnWidth(const unsigned int i) const {
-  return _columnWidths[i];
+size_t FTPrinter::columnWidth(const size_t col) const {
+  return _columnWidths[col];
 }
-PrintFormat FTPrinter::columnHeaderFormat(const unsigned int i) const {
-  return _headerFormats[i];
+PrintFormat FTPrinter::columnHeaderFormat(const size_t col) const {
+  return _headerFormats[col];
 }
-unsigned int FTPrinter::numberOfRows() const {
+size_t FTPrinter::numberOfRows() const {
   return _row;
 }
 
@@ -53,7 +53,7 @@ unsigned int FTPrinter::numberOfRows() const {
  ** \param width the width of the column (has to be >=5)
  ** \param format the format of the header cell
  ** */
-void FTPrinter::addColumn(const std::string& name, unsigned int width, const PrintFormat& format){
+void FTPrinter::addColumn(const std::string& name, size_t width, const PrintFormat& format){
   if (width < 4)
     throw std::invalid_argument("Column width has to be >= 4");
   if (name.size() == 0)
@@ -98,7 +98,7 @@ void FTPrinter::printHeader() {
   printHorizontalLine();
   *_outStream << separator();
 
-  for (unsigned int i = 0; i < numberOfColumns(); ++i) {
+  for (size_t i = 0; i < numberOfColumns(); ++i) {
     *_outStream << columnHeaderFormat(i).formatString();
     *_outStream << std::setw(columnWidth(i)) << columnName(i).substr(0, columnWidth(i));
     *_outStream << columnHeaderFormat(i).unformatString();
