@@ -7,6 +7,8 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 add_library(ftprinter STATIC
   include/ftprinter/FTPrinter.h
   src/FTPrinter.cpp
+  include/ftprinter/BufferedFTPrinter.h
+  src/BufferedFTPrinter.cpp
   include/ftprinter/PrintFormat.h
   src/PrintFormat.cpp
 )

@@ -32,7 +32,8 @@ class endl{};
  */
 class FTPrinter{
 public:
-  FTPrinter(std::ostream* output = &std::cout, const std::string& separator = "|", const std::string& lineEnding = "");
+  FTPrinter(std::ostream* const output = &std::cout, const std::string& separator = "|",
+            const std::string& lineEnding = "");
   ~FTPrinter();
 
   //getter
@@ -49,13 +50,12 @@ public:
   void printHeader();
   void printFooter();
 
-  FTPrinter& operator<<(const PrintFormat& format);
-  FTPrinter& operator<<(endl input);
-  FTPrinter& operator<<(float input);
-  FTPrinter& operator<<(double input);
+  FTPrinter& append(const PrintFormat& format);
+  FTPrinter& append(const endl input);
+  FTPrinter& append(const float input);
+  FTPrinter& append(const double input);
 
-  //can't this be somewhere else? :/
-  template<typename T> FTPrinter& operator<<(T input) {
+  template<typename T> FTPrinter& append(const T input) {
     if (_col == 0)
       *_outStream << separator();
 
@@ -91,7 +91,17 @@ public:
     return *this;
   }
 
-private:
+  FTPrinter& operator<<(const PrintFormat& format);
+  FTPrinter& operator<<(const endl input);
+  FTPrinter& operator<<(const float input);
+  FTPrinter& operator<<(const double input);
+
+  //can't this be somewhere else? :/
+  template<typename T> FTPrinter& operator<<(const T input) {
+    return append(input);
+  }
+
+protected:
   void printHorizontalLine();
   void printEndl();
   void printColumnStart();

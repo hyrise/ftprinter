@@ -9,7 +9,7 @@
 
 namespace ftprinter {
 
-FTPrinter::FTPrinter(std::ostream* output, const std::string& separator, const std::string& lineEnding) :
+FTPrinter::FTPrinter(std::ostream* const output, const std::string& separator, const std::string& lineEnding) :
   _outStream(output),
   _separator(separator),
   _lineEnding(lineEnding),
@@ -137,26 +137,39 @@ void FTPrinter::printColumnEnd() {
 }
 
 
-FTPrinter& FTPrinter::operator<<(const PrintFormat& format) {
+FTPrinter& FTPrinter::append(const PrintFormat& format) {
   _format = format;
   return *this;
 }
-FTPrinter& FTPrinter::operator<<(endl input) {
+FTPrinter& FTPrinter::append(endl input) {
   while (_col > 0){
     *this << "";
   }
   return *this;
 }
-FTPrinter& FTPrinter::operator<<(float input) {
+FTPrinter& FTPrinter::append(float input) {
   return *this << (double) input;
 }
-FTPrinter& FTPrinter::operator<<(double input) {
+FTPrinter& FTPrinter::append(double input) {
   printColumnStart();
 
   *_outStream << decimalNumberToStr<double>(input, columnWidth(_col));
 
   printColumnEnd();
   return *this;
+}
+
+FTPrinter& FTPrinter::operator<<(const PrintFormat& format) {
+  return append(format);
+}
+FTPrinter& FTPrinter::operator<<(endl input) {
+  return append(input);
+}
+FTPrinter& FTPrinter::operator<<(float input) {
+  return append(input);
+}
+FTPrinter& FTPrinter::operator<<(double input) {
+  return append(input);
 }
 
 template<typename T>

@@ -1,11 +1,12 @@
 #include "ftprinter/FTPrinter.h"
-
+#include "ftprinter/BufferedFTPrinter.h"
 #include "ftprinter/PrintFormat.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 using ftprinter::FTPrinter;
+using ftprinter::BufferedFTPrinter;
 
 int main(int argc, char** argv){
   //test of standard unformated output
@@ -71,6 +72,30 @@ int main(int argc, char** argv){
   tp3 << 123456789 << "a";
   tp3.printFooter();
 
+
+  //test for buffered writing
+  BufferedFTPrinter btp;
+  btp.addColumn("Name", 1, 25);
+  btp.addColumn("Age", 1, 5);
+  btp.addColumn("Position", 1, 30);
+  btp.addColumn("Allowance", 1, 9);
+
+  btp.printHeader();
+  btp.printOut();
+
+  btp << "Dat Chu" << 25 << "Research Assistant" << -0.00000000001337;
+  btp << "John Doe" << 26 << "Too much float" << 125456789.123456789;
+  btp << "John Doe" << 26 << "Typical Int" << 1254;
+  btp << "John Doe" << 26 << "Typical float" << 1254.36;
+  btp << "John Doe" << 26 << "Too much negative" << -125456789.123456789;
+  btp << "John Doe" << 26 << "Exact size int" << 125456789;
+  btp << "John Doe" << 26 << "Exact size int" << -12545678;
+  btp << "John Doe" << 26 << "Exact size int" << -125456789;
+  btp << "John Doe" << 26 << "Exact size float" << -1254567.8f;
+  btp << "John Doe" << 26 << "Negative Int" << -1254;
+  btp << "Jane Doe" << ftprinter::endl();
+  btp << "Tom Doe" << 7 << "Student" << -M_PI;
+  btp.printFooter();
 
   return 0;
 }
