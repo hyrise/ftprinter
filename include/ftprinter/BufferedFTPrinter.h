@@ -32,7 +32,7 @@ namespace ftprinter {
  */
 class BufferedFTPrinter : public FTPrinter{
 public:
-  BufferedFTPrinter(const std::string& tableName, std::ostream* const output = &std::cout,
+  BufferedFTPrinter(const std::string& tableName, std::ostream& output,
                     const std::string& separator = "|", const std::string& lineEnding = "");
   ~BufferedFTPrinter();
 
@@ -67,34 +67,31 @@ public:
 
   template<typename T> FTPrinter& operator<<(const T input) {
     if (_col == 0)
-      *_outStream << separator();
+      _outStream << separator();
 
-    *_outStream << _format.formatString();
+    _outStream << _format.formatString();
 
     // Leave 3 extra space: One for negative sign, one for zero, one for decimal
     std::stringstream strBuffer;
-    strBuffer //<< std::setw(columnWidth(_col) - _displacement)
-              << input;
+    strBuffer << input;
 
     std::string str = strBuffer.str();
     size_t width = std::max<int>(str.size(), (int)columnWidth(_col) - _displacement);
-    //std::cout << "(" << _displacement << ", " << (int)width - columnWidth(_col);
     _displacement += (int)width - columnWidth(_col);
-    //std::cout << "=>" << _displacement << ")" << std::endl;
 
-    *_outStream << std::setw(width)
+    _outStream << std::setw(width)
     		<< str
                 << _format.unformatString();
     
     if (_col == numberOfColumns() - 1) {
-      *_outStream << separator();
+      _outStream << separator();
       printEndl();
       _row++;
       _col = 0;
       _displacement = 0;
     }
     else {
-      *_outStream << separator();
+      _outStream << separator();
       _col++;
     }
 

@@ -9,7 +9,7 @@ using ftprinter::FTPrinter;
 using ftprinter::BufferedFTPrinter;
 
 int main(int argc, char** argv){
-  FTPrinter tp("test table 1: unformated output");
+  FTPrinter tp("test table 1: unformated output", std::cout);
   tp.addColumn("Name", 25);
   tp.addColumn("Age", 5);
   tp.addColumn("Position", 30);
@@ -32,7 +32,7 @@ int main(int argc, char** argv){
   tp.printFooter();
 
 
-  FTPrinter tp2("test table 2: formated output");
+  FTPrinter tp2("test table 2: formated output", std::cout);
   tp2.addColumn("red",     8, ftprinter::format::red);
   tp2.addColumn("green",   8, ftprinter::format::green);
   tp2.addColumn("yellow",  8, ftprinter::format::yellow);
@@ -61,7 +61,7 @@ int main(int argc, char** argv){
   tp2.printHeader();
 
 
-  FTPrinter tp3("test table 3: column width adjustment");
+  FTPrinter tp3("test table 3: column width adjustment", std::cout);
   tp3.addColumn("too short column",  8);
   tp3.addColumn("long enough column", 20);
   tp3.addColumn("long enough column", 50);
@@ -76,7 +76,7 @@ int main(int argc, char** argv){
   tp3.printTableName();
 
 
-  BufferedFTPrinter btp("test table 4: buffered output");
+  BufferedFTPrinter btp("test table 4: buffered output", std::cout);
   btp.addColumn("Name", 0, 25);
   btp.addColumn("Age", 0, 5);
   btp.addColumn("Position", 0, 30);

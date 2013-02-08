@@ -1,18 +1,16 @@
 #include "ftprinter/FTPrinter.h"
 
-#include <stdexcept>
 #include <iomanip>
-#include <stdexcept>
 
-#include "ftprinter/PrintFormat.h"
+#include <ftprinter/PrintFormat.h>
 
 
 namespace ftprinter {
 
-FTPrinter::FTPrinter(const std::string& tableName, std::ostream* const output,
+FTPrinter::FTPrinter(const std::string& tableName, std::ostream& outStream,
                      const std::string& separator, const std::string& lineEnding) :
   _tableName(tableName),
-  _outStream(output),
+  _outStream(outStream),
   _separator(separator),
   _lineEnding(lineEnding),
   _format(format::basic),
@@ -58,11 +56,6 @@ const std::string& FTPrinter::tableName() const {
  ** \param format the format of the header cell
  ** */
 void FTPrinter::addColumn(const std::string& name, const size_t width, const PrintFormat& format){
-  if (width <= 0)
-    throw std::invalid_argument("Column width has to be 0");
-  if (name.size() == 0)
-    throw std::invalid_argument("Column name cannot be \"\"");
-
   _columnNames.push_back(name);
   _columnWidths.push_back(width);
   _headerFormats.push_back(format);
@@ -72,18 +65,17 @@ void FTPrinter::printHorizontalLine() {
   if (_col > 0)
     *this << endl();
 
-  *_outStream << "+"; // the left bar
+  _outStream << "+"; // the left bar
 
-  //*_outStream << "+"; // the right bar
   for (size_t col = 0; col < numberOfColumns(); ++col) {
     //line for the column space
     for (size_t i = 0; i < columnWidth(col); ++i)
-      *_outStream << "-";
+      _outStream << "-";
 
     //for the seperator
     const size_t seperatorWidth = separator().size();
     for (size_t i = 0; i < seperatorWidth; ++i)
-      *_outStream << "+";
+      _outStream << "+";
   }
   
   printEndl();
@@ -91,9 +83,9 @@ void FTPrinter::printHorizontalLine() {
 
 void FTPrinter::printEndl() {
   if (_lineEnding.size() != 0)
-    *_outStream << _lineEnding;
+    _outStream << _lineEnding;
   else
-    *_outStream << std::endl;
+    _outStream << std::endl;
 
   _format = format::basic;
 }
@@ -103,34 +95,33 @@ void FTPrinter::printTableName() {
   const int spaceFront = space / 2;
   const int  spaceBack = space - spaceFront;
 
-  *_outStream << "+";
+  _outStream << "+";
   for (int i = 0; i < spaceFront; ++i)
-    *_outStream << "-";
+    _outStream << "-";
 
-*_outStream << format::basic_b.formatString();
-  *_outStream << tableName();
-  *_outStream << format::basic_b.unformatString();
+_outStream << format::basic_b.formatString();
+  _outStream << tableName();
+  _outStream << format::basic_b.unformatString();
 
   for (int i = 0; i < spaceBack; ++i)
-    *_outStream << "-";
-  *_outStream << "+";
+    _outStream << "-";
+  _outStream << "+";
   printEndl();
 }
 
 void FTPrinter::printHeader() {
   printHorizontalLine();
-  *_outStream << separator();
+  _outStream << separator();
 
   for (size_t i = 0; i < numberOfColumns(); ++i) {
-    *_outStream << columnHeaderFormat(i).formatString();
-    *_outStream << std::setw(columnWidth(i)) << columnName(i).substr(0, columnWidth(i));
-    *_outStream << columnHeaderFormat(i).unformatString();
+    _outStream << columnHeaderFormat(i).formatString();
+    _outStream << std::setw(columnWidth(i)) << columnName(i).substr(0, columnWidth(i));
+    _outStream << columnHeaderFormat(i).unformatString();
     if (i < numberOfColumns()){
-      *_outStream << separator();
+      _outStream << separator();
     }
   }
 
-  //*_outStream << separator();
   printEndl();
   printHorizontalLine();
 }
@@ -141,14 +132,14 @@ void FTPrinter::printFooter() {
 
 void FTPrinter::printColumnStart() {
   if (_col == 0)
-    *_outStream << separator();
-  *_outStream << _format.formatString();
+    _outStream << separator();
+  _outStream << _format.formatString();
 }
 
 void FTPrinter::printColumnEnd() {
-  *_outStream << _format.unformatString();
+  _outStream << _format.unformatString();
 
-  *_outStream << separator();
+  _outStream << separator();
 
   ++_col;
   if (_col >= numberOfColumns() - 1) {
@@ -176,7 +167,7 @@ FTPrinter& FTPrinter::append(float input) {
 FTPrinter& FTPrinter::append(double input) {
   printColumnStart();
 
-  *_outStream << decimalNumberToStr<double>(input, columnWidth(_col));
+  _outStream << decimalNumberToStr<double>(input, columnWidth(_col));
 
   printColumnEnd();
   return *this;
@@ -197,9 +188,6 @@ FTPrinter& FTPrinter::operator<<(double input) {
 
 template<typename T>
 std::string FTPrinter::decimalNumberToStr(const T input, const size_t width) {
-//  *_outStream << _format.formatString();
-
-
   std::string str;
 
   // If we cannot handle this number, indicate so
@@ -214,7 +202,6 @@ std::string FTPrinter::decimalNumberToStr(const T input, const size_t width) {
 
     str[width - 1] = '*';
     return str.substr(0, width);
-   // *_outStream << string_to_print;
   }
   else {
     // determine what precision we need
@@ -242,9 +229,7 @@ std::string FTPrinter::decimalNumberToStr(const T input, const size_t width) {
     str = strBuffer.str();
   }
 
-  //*_outStream << _format.unformatString();
-
-  //*_outStream << separator();
+  //_outStream << separator();
   //if (_col >= numberOfColumns() - 1) {
   //  printEndl();
   //  ++_row;

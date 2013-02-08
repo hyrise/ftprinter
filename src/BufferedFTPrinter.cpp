@@ -3,7 +3,7 @@
 namespace ftprinter {
 
 BufferedFTPrinter::BufferedFTPrinter(const std::string& tableName,
-                                     std::ostream* const output,
+                                     std::ostream& output,
                                      const std::string& separator,
                                      const std::string& lineEnding) :
     FTPrinter(tableName, output, separator, lineEnding)
