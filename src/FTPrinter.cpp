@@ -9,11 +9,13 @@
 
 namespace ftprinter {
 
-FTPrinter::FTPrinter(std::ostream* const output, const std::string& separator, const std::string& lineEnding) :
+FTPrinter::FTPrinter(const std::string& tableName, std::ostream* const output,
+                     const std::string& separator, const std::string& lineEnding) :
+  _tableName(tableName),
   _outStream(output),
   _separator(separator),
   _lineEnding(lineEnding),
-  _format(format::none),
+  _format(format::basic),
   _row(0),
   _col(0),
   _displacement(0) {}
@@ -30,10 +32,10 @@ size_t FTPrinter::tableWidth() const {
     tableWidth += columnWidth(i) + separator().size();
   return tableWidth;
 }
-std::string FTPrinter::separator() const {
+const std::string& FTPrinter::separator() const {
   return _separator;
 }
-std::string FTPrinter::columnName(const size_t col) const {
+const std::string& FTPrinter::columnName(const size_t col) const {
   return _columnNames[col];
 }
 size_t FTPrinter::columnWidth(const size_t col) const {
@@ -45,7 +47,9 @@ PrintFormat FTPrinter::columnHeaderFormat(const size_t col) const {
 size_t FTPrinter::numberOfRows() const {
   return _row;
 }
-
+const std::string& FTPrinter::tableName() const {
+  return _tableName;
+}
 
 /** \brief Add a column to our table
  ** 
@@ -53,9 +57,9 @@ size_t FTPrinter::numberOfRows() const {
  ** \param width the width of the column (has to be >=5)
  ** \param format the format of the header cell
  ** */
-void FTPrinter::addColumn(const std::string& name, size_t width, const PrintFormat& format){
-  if (width < 4)
-    throw std::invalid_argument("Column width has to be >= 4");
+void FTPrinter::addColumn(const std::string& name, const size_t width, const PrintFormat& format){
+  if (width <= 0)
+    throw std::invalid_argument("Column width has to be 0");
   if (name.size() == 0)
     throw std::invalid_argument("Column name cannot be \"\"");
 
@@ -91,7 +95,26 @@ void FTPrinter::printEndl() {
   else
     *_outStream << std::endl;
 
-  _format = format::none;
+  _format = format::basic;
+}
+
+void FTPrinter::printTableName() {
+  const int space = (int)tableWidth() - (tableName().size() + 2);
+  const int spaceFront = space / 2;
+  const int  spaceBack = space - spaceFront;
+
+  *_outStream << "+";
+  for (int i = 0; i < spaceFront; ++i)
+    *_outStream << "-";
+
+*_outStream << format::basic_b.formatString();
+  *_outStream << tableName();
+  *_outStream << format::basic_b.unformatString();
+
+  for (int i = 0; i < spaceBack; ++i)
+    *_outStream << "-";
+  *_outStream << "+";
+  printEndl();
 }
 
 void FTPrinter::printHeader() {

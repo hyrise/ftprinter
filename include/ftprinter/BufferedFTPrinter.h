@@ -32,7 +32,8 @@ namespace ftprinter {
  */
 class BufferedFTPrinter : public FTPrinter{
 public:
-  BufferedFTPrinter(std::ostream* const output = &std::cout, const std::string& separator = "|", const std::string& lineEnding = "");
+  BufferedFTPrinter(const std::string& tableName, std::ostream* const output = &std::cout,
+                    const std::string& separator = "|", const std::string& lineEnding = "");
   ~BufferedFTPrinter();
 
   //getter
@@ -42,10 +43,11 @@ public:
   size_t numberOfBufferedRows() const;
   size_t numberOfRows() const;
 
-  void addColumn(const std::string& name, const size_t width = 25, const PrintFormat& format = format::none);
+  void addColumn(const std::string& name, const size_t width = 25, const PrintFormat& format = format::basic);
   void addColumn(const std::string& name, const size_t width = 15,
-                 const size_t maxWidth = 40, const PrintFormat& format = format::none);
+                 const size_t maxWidth = 40, const PrintFormat& format = format::basic);
 
+  void printTableName();
   void printHeader();
   void printFooter();
 
@@ -105,8 +107,7 @@ protected:
   void printColumnStart();
   void printColumnEnd();
 
-  static const int lineFooter = -1;
-  static const int lineHeader = -2;
+  enum SpecialLines {lineFooter = -1, lineHeader = - 2, lineTableName = -3};
 
   //vectores that contain the buffered data
   std::vector<int> _lines;

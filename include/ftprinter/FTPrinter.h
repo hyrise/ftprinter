@@ -32,21 +32,23 @@ class endl{};
  */
 class FTPrinter{
 public:
-  FTPrinter(std::ostream* const output = &std::cout, const std::string& separator = "|",
-            const std::string& lineEnding = "");
+  FTPrinter(const std::string& tableName, std::ostream* const output = &std::cout,
+            const std::string& separator = "|", const std::string& lineEnding = "");
   ~FTPrinter();
 
   //getter
   size_t numberOfColumns() const;
   size_t tableWidth() const;
-  std::string separator() const;
-  std::string columnName(const size_t col) const;
+  const std::string& separator() const;
+  const std::string& columnName(const size_t col) const;
   size_t columnWidth(const size_t col) const;
   PrintFormat columnHeaderFormat(const size_t col) const;
   size_t numberOfRows() const;
+  const std::string& tableName() const; 
 
-  void addColumn(const std::string& name, const size_t width = 25, const PrintFormat& format = format::none);
+  void addColumn(const std::string& name, const size_t width = 25, const PrintFormat& format = format::basic);
 
+  void printTableName();
   void printHeader();
   void printFooter();
 
@@ -68,9 +70,7 @@ public:
 
     std::string str = strBuffer.str();
     size_t width = std::max<int>(str.size(), (int)columnWidth(_col) - _displacement);
-    //std::cout << "(" << _displacement << ", " << (int)width - columnWidth(_col);
     _displacement += (int)width - columnWidth(_col);
-    //std::cout << "=>" << _displacement << ")" << std::endl;
 
     *_outStream << std::setw(width)
     		<< str
@@ -109,6 +109,7 @@ protected:
 
   template<typename T> static std::string decimalNumberToStr(const T input, const size_t width);
 
+  std::string _tableName;
   std::ostream* _outStream;
   std::vector<std::string> _columnNames;
   std::vector<size_t> _columnWidths;

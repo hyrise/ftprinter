@@ -2,10 +2,11 @@
 
 namespace ftprinter {
 
-BufferedFTPrinter::BufferedFTPrinter(std::ostream* const output,
+BufferedFTPrinter::BufferedFTPrinter(const std::string& tableName,
+                                     std::ostream* const output,
                                      const std::string& separator,
                                      const std::string& lineEnding) :
-    FTPrinter(output, separator, lineEnding)
+    FTPrinter(tableName, output, separator, lineEnding)
 {
 
 }
@@ -49,37 +50,35 @@ void BufferedFTPrinter::addColumn(const std::string& name, const size_t width,
   FTPrinter::addColumn(name, std::min(realMaxWidth, name.size()), format);
 }
 
+void BufferedFTPrinter::printTableName() {
+  _lines.push_back(lineTableName);
+}
 void BufferedFTPrinter::printHeader() {
-  _lines.push_back(0);
+  _lines.push_back(lineHeader);
 }
 void BufferedFTPrinter::printFooter() {
-  _lines.push_back(-1);
+  _lines.push_back(lineFooter);
 }
 
 void BufferedFTPrinter::printOut(const size_t rows) {
   size_t row = rows;
   size_t column = 0;
   for (int line: _lines) {
-    if (line == lineHeader) {
-      FTPrinter::printFooter();
-      continue;
-    }
-    if (line == lineFooter) {
-      FTPrinter::printHeader();
-      continue;
-    }
-    
-    if (row == 0)
-      break;
+    switch(line) {
+      case lineHeader:    FTPrinter::printHeader(); break;
+      case lineFooter:    FTPrinter::printFooter(); break;
+      case lineTableName: FTPrinter::printTableName(); break;
+      default: //a data line
+        if (row == 0) break;
 
-    for (size_t i = 0; i < (size_t)line; ++i) {
-      FTPrinter::append( _columnFormats[column]).append(_columns[column]);
-      ++column;
+        for (size_t i = 0; i < (size_t)line; ++i) {
+          FTPrinter::append( _columnFormats[column]).append(_columns[column]);
+          ++column;
+        }
+
+        FTPrinter::append(endl());
+	--row;
     }
-
-    FTPrinter::append(endl());
-
-    --row;
   }
 }
 void BufferedFTPrinter::flush(const size_t rows) {
@@ -105,7 +104,7 @@ FTPrinter& BufferedFTPrinter::append(const PrintFormat& format) {
 FTPrinter& BufferedFTPrinter::append(const endl input) {
   if (_lines.back() != (int)numberOfColumns() || _lines.back()==0) {
     _lines.push_back(0);
-    _columnFormats.push_back(format::none);
+    _columnFormats.push_back(format::basic);
   }
   return *this;
 }
@@ -117,7 +116,7 @@ FTPrinter& BufferedFTPrinter::append(const double input) {
   if (_lines.back() == (int)numberOfColumns()) {
     _lines.push_back(1);
     if (_columnFormats.size() == _columns.size() - 1)
-      append(format::none);
+      append(format::basic);
   }
   else {
     append(_columnFormats.back());

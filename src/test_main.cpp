@@ -9,13 +9,13 @@ using ftprinter::FTPrinter;
 using ftprinter::BufferedFTPrinter;
 
 int main(int argc, char** argv){
-  //test of standard unformated output
-  FTPrinter tp;
+  FTPrinter tp("test table 1: unformated output");
   tp.addColumn("Name", 25);
   tp.addColumn("Age", 5);
   tp.addColumn("Position", 30);
   tp.addColumn("Allowance", 9);
 
+  tp.printTableName();
   tp.printHeader();
   tp << "Dat Chu" << 25 << "Research Assistant" << -0.00000000001337;
   tp << "John Doe" << 26 << "Too much float" << 125456789.123456789;
@@ -31,8 +31,8 @@ int main(int argc, char** argv){
   tp << "Tom Doe" << 7 << "Student" << -M_PI;
   tp.printFooter();
 
-  //test for formated output
-  FTPrinter tp2;
+
+  FTPrinter tp2("test table 2: formated output");
   tp2.addColumn("red",     8, ftprinter::format::red);
   tp2.addColumn("green",   8, ftprinter::format::green);
   tp2.addColumn("yellow",  8, ftprinter::format::yellow);
@@ -41,8 +41,9 @@ int main(int argc, char** argv){
   tp2.addColumn("magenta", 8, ftprinter::format::magenta);
   tp2.addColumn("white",   8, ftprinter::format::white);
   tp2.addColumn("black",   8, ftprinter::format::black);
-  tp2.addColumn("nothing", 8, ftprinter::format::none);
+  tp2.addColumn("nothing", 8, ftprinter::format::basic);
 
+  tp2.printTableName();
   tp2.printHeader();
   
   tp2 << "asdfsdf" << ftprinter::format::red << 2 << 3 << 4 << 5 << ftprinter::endl();
@@ -59,27 +60,29 @@ int main(int argc, char** argv){
       << "neue zeile";
   tp2.printHeader();
 
-  //test for displacement compensation
-  FTPrinter tp3;
+
+  FTPrinter tp3("test table 3: column width adjustment");
   tp3.addColumn("too short column",  8);
   tp3.addColumn("long enough column", 20);
   tp3.addColumn("long enough column", 50);
 
+  tp3.printTableName();
   tp3.printHeader();
 
   tp3 << "asdhfjahsddfjhasdlkfjhasdklfjasdkfjhasdklfj" << "asdfasdfasdfasdfasdfasdfasdfasdfasdfasdf" << "bbbbb";
   tp3 << 66666666666.5 << "asdf" << "asdfasdf";
   tp3 << 123456789 << "a";
   tp3.printFooter();
+  tp3.printTableName();
 
 
-  //test for buffered writing
-  BufferedFTPrinter btp;
-  btp.addColumn("Name", 1, 25);
-  btp.addColumn("Age", 1, 5);
-  btp.addColumn("Position", 1, 30);
-  btp.addColumn("Allowance", 1, 9);
+  BufferedFTPrinter btp("test table 4: buffered output");
+  btp.addColumn("Name", 0, 25);
+  btp.addColumn("Age", 0, 5);
+  btp.addColumn("Position", 0, 30);
+  btp.addColumn("Allowance", 0, 9);
 
+  btp.printTableName();
   btp.printHeader();
   btp.printOut();
 
@@ -96,6 +99,8 @@ int main(int argc, char** argv){
   btp << "Jane Doe" << ftprinter::endl();
   btp << "Tom Doe" << 7 << "Student" << -M_PI;
   btp.printFooter();
+
+  btp.printHeader();
 
   return 0;
 }
