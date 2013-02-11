@@ -63,7 +63,7 @@ void FTPrinter::addColumn(const std::string& name, const size_t width, const Pri
 
 void FTPrinter::printHorizontalLine() {
   if (_col > 0)
-    *this << endl();
+	  endTableRow();
 
   //for the seperator
   const size_t seperatorWidth = separator().size();
@@ -93,6 +93,9 @@ void FTPrinter::printEndl() {
 }
 
 void FTPrinter::printTableName() {
+  if (_col > 0)
+	endTableRow();
+
   const int space = (int)tableWidth() - (tableName().size() + 2);
   const int spaceFront = space / 2;
   const int  spaceBack = space - spaceFront;
@@ -112,7 +115,8 @@ _outStream << format::basic_b.formatString();
 }
 
 void FTPrinter::printHeader() {
-  printHorizontalLine();
+  if (_col > 0)
+	  endTableRow();
   _outStream << separator();
 
   for (size_t i = 0; i < numberOfColumns(); ++i) {
@@ -123,7 +127,6 @@ void FTPrinter::printHeader() {
       _outStream << separator();
     }
   }
-
   printEndl();
   printHorizontalLine();
 }
@@ -143,8 +146,7 @@ void FTPrinter::printColumnEnd() {
 
   _outStream << separator();
 
-  ++_col;
-  if (_col >= numberOfColumns() - 1) {
+  if (_col++ >= numberOfColumns() - 1) {
     printEndl();
     ++_row;
     _col = 0;
@@ -152,16 +154,25 @@ void FTPrinter::printColumnEnd() {
   }
 }
 
+void FTPrinter::endTableRow() {
+	while (_col > 0){
+		printColumnStart();
+		const int spaces = columnWidth(_col) - _displacement;
+		_displacement = _displacement - (columnWidth(_col) - spaces);
+		for (int i = 0; i < spaces; ++i)
+			_outStream << " ";
+		printColumnEnd();
+	}
+}
+
 
 FTPrinter& FTPrinter::append(const PrintFormat& format) {
   _format = format;
   return *this;
 }
-FTPrinter& FTPrinter::append(endl input) {
-  while (_col > 0){
-    *this << "";
-  }
-  return *this;
+FTPrinter& FTPrinter::append(endl) {
+	endTableRow();
+	return *this;
 }
 FTPrinter& FTPrinter::append(float input) {
   return *this << (double) input;

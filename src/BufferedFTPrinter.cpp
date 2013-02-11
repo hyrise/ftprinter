@@ -6,11 +6,13 @@ BufferedFTPrinter::BufferedFTPrinter(const std::string& tableName,
                                      std::ostream& output,
                                      const std::string& separator,
                                      const std::string& lineEnding) :
-    FTPrinter(tableName, output, separator, lineEnding)
-{
+	FTPrinter(tableName, output, separator, lineEnding) {
 
 }
-BufferedFTPrinter::~BufferedFTPrinter() { }
+BufferedFTPrinter::~BufferedFTPrinter() {
+	*this << endl();
+	flush();
+}
 
 
 size_t BufferedFTPrinter::maxTableWidth() const {
@@ -63,22 +65,22 @@ void BufferedFTPrinter::printFooter() {
 void BufferedFTPrinter::printOut(const size_t rows) {
   size_t row = rows;
   size_t column = 0;
-  for (int line: _lines) {
-    if (line < 0 && column > 0)
+  for (int lineType: _lines) {
+	if (lineType < 0 && column > 0)
       FTPrinter::append(endl());
-    switch(line) {
+	switch(lineType) {
       case lineHeader:    FTPrinter::printHeader(); break;
       case lineFooter:    FTPrinter::printFooter();  break;
       case lineTableName: FTPrinter::printTableName(); break;
       default: //a data line
         if (row == 0) break;
 
-        for (size_t i = 0; i < (size_t)line; ++i) {
+		for (size_t i = 0; i < static_cast<size_t>(lineType); ++i) {
           FTPrinter::append( _columnFormats[column]).append(_columns[column]);
           ++column;
         }
 
-        FTPrinter::append(endl());
+		FTPrinter::append(endl());
 	--row;
     }
   }

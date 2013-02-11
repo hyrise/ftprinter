@@ -36,25 +36,25 @@ public:
   ~FTPrinter();
 
   //getter
-  size_t numberOfColumns() const;
+  virtual size_t numberOfColumns() const;
   virtual size_t tableWidth() const;
-  const std::string& separator() const;
-  const std::string& columnName(const size_t col) const;
+  virtual const std::string& separator() const;
+  virtual const std::string& columnName(const size_t col) const;
   virtual size_t columnWidth(const size_t col) const;
-  PrintFormat columnHeaderFormat(const size_t col) const;
+  virtual PrintFormat columnHeaderFormat(const size_t col) const;
   virtual size_t numberOfRows() const;
-  const std::string& tableName() const; 
+  virtual const std::string& tableName() const; 
 
-  void addColumn(const std::string& name, const size_t width = 25, const PrintFormat& format = format::basic);
+  virtual void addColumn(const std::string& name, const size_t width = 25, const PrintFormat& format = format::basic);
 
-  void printTableName();
-  void printHeader();
-  void printFooter();
+  virtual void printTableName();
+  virtual void printHeader();
+  virtual void printFooter();
 
-  FTPrinter& append(const PrintFormat& format);
-  FTPrinter& append(const endl input);
-  FTPrinter& append(const float input);
-  FTPrinter& append(const double input);
+  virtual FTPrinter& append(const PrintFormat& format);
+  virtual FTPrinter& append(const endl input);
+  virtual FTPrinter& append(const float input);
+  virtual FTPrinter& append(const double input);
 
   template<typename T> FTPrinter& append(const T input) {
     if (_col == 0)
@@ -90,10 +90,10 @@ public:
     return *this;
   }
 
-  FTPrinter& operator<<(const PrintFormat& format);
-  FTPrinter& operator<<(const endl input);
-  FTPrinter& operator<<(const float input);
-  FTPrinter& operator<<(const double input);
+  virtual FTPrinter& operator<<(const PrintFormat& format);
+  virtual FTPrinter& operator<<(const endl input);
+  virtual FTPrinter& operator<<(const float input);
+  virtual FTPrinter& operator<<(const double input);
 
   //can't this be somewhere else? :/
   template<typename T> FTPrinter& operator<<(const T input) {
@@ -105,6 +105,7 @@ protected:
   void printEndl();
   void printColumnStart();
   void printColumnEnd();
+  void endTableRow();
 
   template<typename T> static std::string decimalNumberToStr(const T input, const size_t width);
 

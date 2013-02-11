@@ -66,9 +66,6 @@ public:
   BufferedFTPrinter& operator<<(const double input);
 
   template<typename T> BufferedFTPrinter& operator<<(const T input) {
-    if (_col == 0)
-      _outStream << separator();
-
     _outStream << _format.formatString();
 
     // Leave 3 extra space: One for negative sign, one for zero, one for decimal
@@ -80,8 +77,8 @@ public:
     _displacement += (int)width - columnWidth(_col);
 
     _outStream << std::setw(width)
-    		<< str
-                << _format.unformatString();
+			   << str
+			   << _format.unformatString();
     
     if (_col == numberOfColumns() - 1) {
       _outStream << separator();
