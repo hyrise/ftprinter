@@ -32,7 +32,7 @@ int main(int argc, char** argv){
   tp.printFooter();
 
 
-  FTPrinter tp2("test table 2: formated output", std::cout);
+  FTPrinter tp2("test table 2: formated output", std::cout, "||", "\n");
   tp2.addColumn("red",     8, ftprinter::format::red);
   tp2.addColumn("green",   8, ftprinter::format::green);
   tp2.addColumn("yellow",  8, ftprinter::format::yellow);
@@ -101,6 +101,9 @@ int main(int argc, char** argv){
   btp.printFooter();
 
   btp.printHeader();
+  btp.flush();
+
+  btp << ftprinter::format::red_b << "!!THIS SHOULD NOT BE PRINTED!!";
 
   return 0;
 }

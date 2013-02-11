@@ -37,12 +37,12 @@ public:
 
   //getter
   size_t numberOfColumns() const;
-  size_t tableWidth() const;
+  virtual size_t tableWidth() const;
   const std::string& separator() const;
   const std::string& columnName(const size_t col) const;
-  size_t columnWidth(const size_t col) const;
+  virtual size_t columnWidth(const size_t col) const;
   PrintFormat columnHeaderFormat(const size_t col) const;
-  size_t numberOfRows() const;
+  virtual size_t numberOfRows() const;
   const std::string& tableName() const; 
 
   void addColumn(const std::string& name, const size_t width = 25, const PrintFormat& format = format::basic);

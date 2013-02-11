@@ -64,9 +64,11 @@ void BufferedFTPrinter::printOut(const size_t rows) {
   size_t row = rows;
   size_t column = 0;
   for (int line: _lines) {
+    if (line < 0 && column > 0)
+      FTPrinter::append(endl());
     switch(line) {
       case lineHeader:    FTPrinter::printHeader(); break;
-      case lineFooter:    FTPrinter::printFooter(); break;
+      case lineFooter:    FTPrinter::printFooter();  break;
       case lineTableName: FTPrinter::printTableName(); break;
       default: //a data line
         if (row == 0) break;
@@ -91,7 +93,7 @@ void BufferedFTPrinter::clear(const size_t rows) {
   _lines.clear();
 }
 
-FTPrinter& BufferedFTPrinter::append(const PrintFormat& format) {
+BufferedFTPrinter& BufferedFTPrinter::append(const PrintFormat& format) {
   const size_t numberOfFormats = _columnFormats.size();
   if (numberOfFormats >= _columns.size()) {
     if (numberOfFormats == _columns.size() + 1)
@@ -101,17 +103,17 @@ FTPrinter& BufferedFTPrinter::append(const PrintFormat& format) {
   }
   return *this;
 }
-FTPrinter& BufferedFTPrinter::append(const endl input) {
+BufferedFTPrinter& BufferedFTPrinter::append(const endl input) {
   if (_lines.back() != (int)numberOfColumns() || _lines.back()==0) {
     _lines.push_back(0);
     _columnFormats.push_back(format::basic);
   }
   return *this;
 }
-FTPrinter& BufferedFTPrinter::append(const float input) {
+BufferedFTPrinter& BufferedFTPrinter::append(const float input) {
   return append((double) input);
 }
-FTPrinter& BufferedFTPrinter::append(const double input) {
+BufferedFTPrinter& BufferedFTPrinter::append(const double input) {
   _columns.push_back(FTPrinter::decimalNumberToStr(input, maxColumnWidth(_lines.back())));
   if (_lines.back() == (int)numberOfColumns()) {
     _lines.push_back(1);
@@ -125,31 +127,17 @@ FTPrinter& BufferedFTPrinter::append(const double input) {
   return *this;
 }
 
-FTPrinter& BufferedFTPrinter::operator<<(const PrintFormat& format) {
+BufferedFTPrinter& BufferedFTPrinter::operator<<(const PrintFormat& format) {
   return append(format);
 }
-FTPrinter& BufferedFTPrinter::operator<<(const endl input) {
+BufferedFTPrinter& BufferedFTPrinter::operator<<(const endl input) {
   return append(input);
 }
-FTPrinter& BufferedFTPrinter::operator<<(const float input) {
+BufferedFTPrinter& BufferedFTPrinter::operator<<(const float input) {
   return append(input);
 }
-FTPrinter& BufferedFTPrinter::operator<<(const double input) {
+BufferedFTPrinter& BufferedFTPrinter::operator<<(const double input) {
   return append(input);
-}
-
-
-void BufferedFTPrinter::printHorizontalLine() {
-
-}
-void BufferedFTPrinter::printEndl() {
-
-}
-void BufferedFTPrinter::printColumnStart() {
-
-}
-void BufferedFTPrinter::printColumnEnd() {
-
 }
 
 }// namespace ftprinter

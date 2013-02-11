@@ -65,7 +65,10 @@ void FTPrinter::printHorizontalLine() {
   if (_col > 0)
     *this << endl();
 
-  _outStream << "+"; // the left bar
+  //for the seperator
+  const size_t seperatorWidth = separator().size();
+  for (size_t i = 0; i < seperatorWidth; ++i)
+    _outStream << "+";
 
   for (size_t col = 0; col < numberOfColumns(); ++col) {
     //line for the column space
@@ -73,7 +76,6 @@ void FTPrinter::printHorizontalLine() {
       _outStream << "-";
 
     //for the seperator
-    const size_t seperatorWidth = separator().size();
     for (size_t i = 0; i < seperatorWidth; ++i)
       _outStream << "+";
   }

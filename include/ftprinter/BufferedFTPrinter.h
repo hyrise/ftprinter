@@ -55,17 +55,17 @@ public:
   void flush(const size_t rows = (size_t) -1);
   void clear(const size_t rows = (size_t) -1);
   
-  FTPrinter& append(const PrintFormat& format);
-  FTPrinter& append(const endl input);
-  FTPrinter& append(const float input);
-  FTPrinter& append(const double input);
+  BufferedFTPrinter& append(const PrintFormat& format);
+  BufferedFTPrinter& append(const endl input);
+  BufferedFTPrinter& append(const float input);
+  BufferedFTPrinter& append(const double input);
 
-  FTPrinter& operator<<(const PrintFormat& format);
-  FTPrinter& operator<<(const endl input);
-  FTPrinter& operator<<(const float input);
-  FTPrinter& operator<<(const double input);
+  BufferedFTPrinter& operator<<(const PrintFormat& format);
+  BufferedFTPrinter& operator<<(const endl input);
+  BufferedFTPrinter& operator<<(const float input);
+  BufferedFTPrinter& operator<<(const double input);
 
-  template<typename T> FTPrinter& operator<<(const T input) {
+  template<typename T> BufferedFTPrinter& operator<<(const T input) {
     if (_col == 0)
       _outStream << separator();
 
@@ -99,11 +99,6 @@ public:
   }
 
 protected:
-  void printHorizontalLine();
-  void printEndl();
-  void printColumnStart();
-  void printColumnEnd();
-
   enum SpecialLines {lineFooter = -1, lineHeader = - 2, lineTableName = -3};
 
   //vectores that contain the buffered data
