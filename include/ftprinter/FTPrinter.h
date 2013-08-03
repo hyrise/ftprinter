@@ -1,5 +1,5 @@
-#ifndef FTPRINTER_TABLE_PRINTER_H_
-#define FTPRINTER_TABLE_PRINTER_H_
+#ifndef FTPRINTER_TABLEPRINTER_H_
+#define FTPRINTER_TABLEPRINTER_H_
 
 #include <iomanip>
 #include <vector>
@@ -126,4 +126,4 @@ protected:
 
 }// namespace ftprinter
 
-#endif //FTPRINTER_TABLE_PRINTER_H_
+#endif //FTPRINTER_TABLEPRINTER_H_
